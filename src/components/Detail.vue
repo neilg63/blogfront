@@ -29,7 +29,6 @@
 
 <script>
 
-import Product from './Product'
 import VuePicture from './VuePicture'
 import Sections from './Sections'
 import Share from './Share'
@@ -39,7 +38,6 @@ export default {
   name: 'Detail',
   components: {
     VuePicture,
-    Product,
     Sections,
     Share
   },
