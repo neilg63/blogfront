@@ -1,6 +1,6 @@
-# lucia
+# blogfront
 
-> Shopping cart driven by Ecwid + Drupal 8 feed
+> Blog CMS frontend with with a Drupal powered backend (using JSON + custom module)
 
 ## Build Setup
 
