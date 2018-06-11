@@ -19,11 +19,21 @@ export default {
   },
   computed: mapGetters(['numTags']),
   created () {
-    this.tags = this.$store.state.tags
-    this.mapClassNames()
+    let comp = this
+    if (comp.$parent.$parent.homeLoaded) {
+      comp.init()
+    }
+    this.$bus.$on('siteinfo', (status) => {
+      comp.init()
+    })
   },
   methods: {
+    init () {
+      this.tags = this.$store.state.tags
+      this.mapClassNames()
+    },
     filter (tagName) {
+      this.$parent.loadMoreBlogSummaries()
       this.filterName = tagName
       this.$store.state.filter = tagName
       this.mapClassNames()

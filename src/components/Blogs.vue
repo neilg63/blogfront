@@ -10,6 +10,7 @@
         <div class="body" v-html="blog.body.summary"></div>
       </template>
       <ul class="plain inline tags">
+        <li class="word-count">{{blog.body.wc}} words</li>
         <li v-for="tag in blog.tags" @click="filter(tag)">{{tag}}</li>
       </ul>
     </article>
@@ -28,15 +29,22 @@ export default {
   data () {
     return {
       blogs: [],
+      numBlogs: 0,
       filterRgx: null,
       showFull: false
     }
   },
   created () {
-    this.blogs = this.$store.state.blogs.map(b => {
-      b.showFull = false
-      b.classNames = ['node-' + b.nid]
-      return b
+    let comp = this
+    if (this.$parent.$parent.homeLoaded) {
+      comp.initBlogs()
+    }
+    this.$bus.$on('siteinfo', (status) => {
+      comp.initBlogs()
+    })
+    this.$bus.$on('blogs-appended', (status) => {
+      console.log(983)
+      comp.initBlogs()
     })
     this.filterRgx = RegExp('all', 'i')
   },
@@ -55,6 +63,14 @@ export default {
     }
   },
   methods: {
+    initBlogs () {
+      this.blogs = this.$store.state.blogs.map(b => {
+        b.showFull = false
+        b.classNames = ['node-' + b.nid]
+        return b
+      })
+      this.numBlogs = this.$store.state.numBlogs 
+    },
     filterByTag (blog)  {
       if (blog.tags instanceof Array) {
         let nt = blog.tags.length, i = 0
@@ -72,7 +88,7 @@ export default {
       this.$store.state.filter = tagName
     },
     inScope (index) {
-      return index < (20 + (this.$parent.visitedEms / 15))
+      return index < (15 + (this.$parent.visitedEms / 15))
     },
     loadMore(blog) {
         if (blog.fullMode) {

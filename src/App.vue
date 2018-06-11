@@ -1,11 +1,11 @@
 <template>
-  <div id="app" :class="{'show-menu': showMenu,'show-detail': showDetail,'show-home': !showDetail,'scrolled-up': !scrolledDown,'page-up': !pageDown, }">
+  <div id="app" :class="classNames">
     <header class="top-header">
       <div class="inner">
         <div class="menu-toggle icon-menu top-icon" v-on:click.stop="toggleMenu()"></div>
-        <div class="screen-y">{{screenY|round2}}, {{visitedY|round2}}, {{visitedEms|round}}</div>
+        <div class="screen-y">{{screenY|round2}}, {{numBlogsLoaded}}</div>
         <div id="main-logo" class="main-logo" @click="logoAction()"></div>
-        <div class="back-to back-to-main" v-on:click="backToMain()"><span class="text">Back</span></div>
+        
       </div>
     </header>
     <nav class="main-nav">
@@ -13,6 +13,7 @@
       <ul class="menu">
         <li v-for="item in menu" :key="item.link"><router-link v-bind:to="item.link">{{item.title}}</router-link></li>
       </ul>
+      <styler></styler>
     </nav>
     <div class="main">
       <div class="home-pane">
@@ -44,6 +45,7 @@ import Sections from '@/components/Sections'
 import VueFooter from '@/components/VueFooter'
 import Blogs from '@/components/Blogs'
 import TagsList from '@/components/TagsList'
+import Styler from '@/components/Styler'
 import filters from './mixins/filters'
 import u from './utils/utils'
 export default {
@@ -53,7 +55,8 @@ export default {
     Sections,
     VueFooter,
     Blogs,
-    TagsList
+    TagsList,
+    Styler
   },
   mixins: [filters],
   data () {
@@ -76,12 +79,37 @@ export default {
       scrolledDown: false,
       pageDown: false,
       lang: 'en',
-      updating: false
+      updating: false,
+      fetching: false
     }
   },
   computed: {
     visitedEms () {
       return this.$store.state.visitedEms
+    },
+    numBlogs () {
+      return this.$store.state.numBlogs
+    },
+    numBlogsLoaded () {
+      return this.$store.state.blogs.length
+    },
+    classNames () {
+      let cls = []
+      if (this.showMenu) {
+        cls.push('show-menu')
+      }
+      if (this.showDetail) {
+        cls.push('show-detail')
+      }
+      if (!this.scrolledDown) {
+        cls.push('scrolled-up')
+      }
+      if (!this.pageDown) {
+        cls.push('page-up')
+      }
+      cls.push('text-' + this.$store.state.textSize)
+      cls.push('scheme-' + this.$store.state.scheme)
+      return cls
     }
   },
   created () {
@@ -102,6 +130,16 @@ export default {
         this.showDetail = true
         break
     }
+
+    this.$bus.$on('blogs-more-summaries', (data) => {
+      if (data.items instanceof Array) {
+        if (comp.numBlogsLoaded < comp.numBlogs) {
+          comp.$store.state.blogs = comp.$store.state.blogs.concat(data.items)
+          comp.$bus.$emit('blogs-appended', true)
+        }
+        comp.fetching = false
+      }
+    })
     window.addEventListener('keyup', (e) => {
       switch (e.keyCode) {
         case 27:
@@ -169,11 +207,14 @@ export default {
           }
         }
       }
+      if (data.num_blogs) {
+        this.$store.state.numBlogs = data.num_blogs
+      }
       if (data.tags) {
         if (data.tags instanceof Array) {
           data.tags.unshift({
             name: 'All',
-            num: this.$store.state.blogs.length
+            num: this.$store.state.numBlogs
           })
           this.$store.state.tags = data.tags.filter(t => t.name.length < 32 && t.num > 5)
         }
@@ -190,12 +231,24 @@ export default {
         }
         comp.scrolledDown  = comp.screenY > 0.125;
         comp.pageDown = comp.screenY > 0.95;
+        if (comp.screenY > 2) {
+          comp.loadMoreBlogSummaries()
+        }
       })
       if (comp.updating) {
         comp.$router.push(comp.$route.path + '#' + comp.lang)
         comp.$root.$forceUpdate()
 
         comp.updating = false
+      }
+    },
+    loadMoreBlogSummaries () {
+      let comp = this
+      if (this.numBlogsLoaded < this.numBlogs) {
+        if (!this.fetching) {
+          this.fetching = true
+          this.$parent.fetchData('blogs-more-summaries')
+        }
       }
     },
     processSections (sections) {
@@ -238,14 +291,7 @@ export default {
 }
 </script>
 <style>
-#app {
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: black;
-  z-index: 1;
-  overflow-x: hidden;
-}
+
 #app ol.dot-nav,
 #app ol.arrow-nav {
   position: absolute;

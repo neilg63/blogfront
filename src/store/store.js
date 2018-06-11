@@ -8,9 +8,12 @@ export const store = new Vuex.Store({
     home: {},
     topImages: [],
     blogs: [],
+    numBlogs: 0,
     tags: [],
     filter: 'all',
-    visitedEms: 0
+    visitedEms: 0,
+    textSize: 'medium',
+    scheme: 'light'
   },
   getters: {
     numTags: state => {

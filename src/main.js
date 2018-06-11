@@ -32,6 +32,7 @@ Vue.use(VueScrollTo, {
   x: false,
   y: true
 })
+
 Vue.use(VueLocalStorage, {
   name: 'ls',
   bind: true //created computed members from your variable declarations
@@ -161,7 +162,6 @@ new Vue({
             this.$bus.$emit(pageKey, storedData)
           }
         } else {
-          subPath += '?lang=' + this.lang
           axios.get(this.cmsApi + subPath)
             .then(response => {
               if (response.data) {
