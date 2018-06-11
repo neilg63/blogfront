@@ -12,12 +12,24 @@ export const store = new Vuex.Store({
     tags: [],
     filter: 'all',
     visitedEms: 0,
-    textSize: 'medium',
-    scheme: 'light'
+    styles: {
+      size: 'medium',
+      scheme: 'light',
+      font: 'default'
+    }
   },
   getters: {
     numTags: state => {
       return state.tags.length
+    },
+    textSize: state => {
+      return state.styles.size
+    },
+    scheme: state => {
+      return state.styles.scheme
+    },
+    font: state => {
+      return state.styles.font
     }
   },
   mutations: {

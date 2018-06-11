@@ -4,8 +4,8 @@
       <div class="inner">
         <div class="menu-toggle icon-menu top-icon" v-on:click.stop="toggleMenu()"></div>
         <div class="screen-y">{{screenY|round2}}, {{numBlogsLoaded}}</div>
-        <div id="main-logo" class="main-logo" @click="logoAction()"></div>
-        
+        <div id="main-logo" class="main-logo icon-oi-logo" @click="logoAction()"></div>
+        <div id="toggle-styler" @click="toggleStyler()">Styles</div>
       </div>
     </header>
     <nav class="main-nav">
@@ -13,8 +13,8 @@
       <ul class="menu">
         <li v-for="item in menu" :key="item.link"><router-link v-bind:to="item.link">{{item.title}}</router-link></li>
       </ul>
-      <styler></styler>
     </nav>
+    <styler></styler>
     <div class="main">
       <div class="home-pane">
         <slides/>
@@ -64,6 +64,7 @@ export default {
       menu: [],
       showMenu: false,
       showDetail: false,
+      showStyler: false,
       blogs: [],
       numSections: 0,
       sections: [],
@@ -107,13 +108,17 @@ export default {
       if (!this.pageDown) {
         cls.push('page-up')
       }
-      cls.push('text-' + this.$store.state.textSize)
-      cls.push('scheme-' + this.$store.state.scheme)
+      if (this.showStyler) {
+        cls.push('show-styler')
+      }
+      cls.push('text-' + this.$store.getters.textSize)
+      cls.push('scheme-' + this.$store.getters.scheme)
+      cls.push('font-' + this.$store.getters.font)
       return cls
     }
   },
   created () {
-    this.lang = this.$parent.lang
+    this.getStyles()
     let comp = this
     this.$bus.$on('hide-menu', () => {
       comp.showMenu = false
@@ -281,11 +286,38 @@ export default {
       }
       return []
     },
+    updateStyles () {
+      this.$ls.set('styles', JSON.stringify(this.$store.state.styles))
+    },
+    getStyles () {
+      let stored = this.$ls.get('styles')
+      if (typeof stored == 'string') {
+        if (stored.indexOf('"font":') > 0) {
+          this.$store.state.styles = JSON.parse(stored)
+
+        }
+      }
+    },
+    logoAction  () {
+
+    },
     toggleMenu () {
       this.showMenu = !this.showMenu
     },
     hideMenu () {
       this.showMenu = false
+    },
+    toggleStyler (mode) {
+      let newVal = !this.showStyler
+      switch (mode) {
+        case 'hide':
+          newVal = false
+          break
+        case 'show':
+          newVal = true
+          break
+      }
+      this.showStyler = newVal
     }
   }
 }

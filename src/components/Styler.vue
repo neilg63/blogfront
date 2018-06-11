@@ -10,6 +10,11 @@
         {{item.title}}
       </li>
     </ul>
+    <ul class="plain font-families">
+      <li v-for="item in fonts" :class="item.classNames" @click="assignFont(item)">
+        {{item.title}}
+      </li>
+    </ul>
   </aside>
 </template>
 <script>
@@ -49,22 +54,44 @@ export default {
           type: 'dark',
           title: 'Dark'
         }
+      ],
+      fonts: [
+        {
+          type: 'open',
+          title: 'Open Sans'
+        },
+        {
+          type: 'swanky',
+          title: 'Swanky'
+        },
+        {
+          type: 'bubbler',
+          title: 'Bubbler'
+        },
+        {
+          type: 'handlee',
+          title: 'Handlee'
+        }
       ]
     }
   },
   created () {
     this.assignClasses('scheme')
     this.assignClasses('size')
+    this.assignClasses('font')
   },
   methods: {
     assignClasses (mode) {
       let def = ''
       switch (mode) {
         case 'scheme':
-          this.schemes = this.mapClasses(this.schemes, this.$store.state.scheme)
+          this.schemes = this.mapClasses(this.schemes, this.$store.getters.scheme)
           break
         case 'size':
-          this.sizes = this.mapClasses(this.sizes, this.$store.state.textSize)
+          this.sizes = this.mapClasses(this.sizes, this.$store.getters.textSize)
+          break
+        case 'font':
+          this.fonts = this.mapClasses(this.fonts, this.$store.getters.font)
           break
       }
       
@@ -80,12 +107,19 @@ export default {
       })
     },
     assignSize (size) {
-      this.$store.state.textSize = size.type
+      this.$store.state.styles.size = size.type
       this.assignClasses('size')
+      this.$parent.updateStyles()
     },
     assignScheme (scheme) {
-      this.$store.state.scheme = scheme.type
+      this.$store.state.styles.scheme = scheme.type
       this.assignClasses('scheme')
+      this.$parent.updateStyles()
+    },
+    assignFont (font) {
+      this.$store.state.styles.font = font.type
+      this.assignClasses('font')
+      this.$parent.updateStyles()
     }
   }
 }
@@ -100,9 +134,22 @@ export default {
   flex: none;
 }
 
+#app .styler ul {
+  margin: 2rem 0;
+}
+
 .styler ul li {
   padding: 0.25em 1em;
   cursor: pointer;
+}
+
+.styler ul.schemes li {
+  border: solid 1px black;
+}
+
+.styler ul.font-families li,
+.styler ul.text-sizes li {
+  color: black;
 }
 
 .styler ul li:hover {

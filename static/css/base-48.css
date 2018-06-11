@@ -3,8 +3,32 @@ body,
   font-family: 'Raleway', sans-serif;
 }
 
+
+aside.styler ul.font-families li.open,
 #app .body {
-  font-family: 'Indie Flower', sans-serif;
+  font-family: 'Overpass Mono', sans-serif;
+  clear:  both;
+}
+/*
+Raleway|Bubbler+One|Handlee|Open+Sans|Overpass+Mono|Swanky+and+Moo+Moo
+*/
+
+aside.styler ul.font-families li.swanky,
+#app.font-swanky .body {
+  font-family: 'Swanky and Moo Moo', sans-serif;
+  clear:  both;
+}
+
+aside.styler ul.font-families li.handlee,
+#app.font-handlee .body {
+  font-family: 'Handlee', sans-serif;
+  clear:  both;
+}
+
+
+aside.styler ul.font-families li.bubbler,
+#app.font-bubbler .body {
+  font-family: 'Bubbler One', sans-serif;
   clear:  both;
 }
 
@@ -63,34 +87,45 @@ html {
   font-size: 16px;
 }
 
+aside.styler ul.text-sizes li.small,
 #app.text-small {
   font-size: 87.5%;
 }
 
+aside.styler ul.text-sizes li.medium,
 #app.text-medium {
   font-size: 100%;
 }
 
+aside.styler ul.text-sizes li.large,
 #app.text-large {
   font-size: 112.5%;
 }
 
+aside.styler ul.text-sizes li.xlarge,
 #app.text-xlarge {
   font-size: 125%;
 }
-#app .top-header,
+
 body {
   background-color: white;
   color: #666666;
 }
 
 #app.scheme-dark,
+aside.styler ul.schemes li.dark,
 #app.scheme-dark .top-header {
   background-color: #333333;
 }
 
+aside.styler ul.schemes li.dark,
 #app.scheme-dark {
   color: #cccccc;
+}
+
+#app.scheme-green .tags li,
+#app.scheme-dark .tags li {
+  filter: brightness(800%) grayscale(75%);
 }
 
 #app.scheme-dark nav.main-nav {
@@ -101,21 +136,46 @@ body {
   color: #9999ff;
 }
 
+#toggle-styler {
+  position: absolute;
+  right:  2.5%;
+  top: 1em;
+}
+
+#app aside.styler {
+  position: fixed;
+  right:  2.5%;
+  top: 4em;
+  max-width: 10em;
+  z-index:  -1;
+  opacity: 0;
+  transition: opacity 1s ease-in-out;
+  background-color: white;
+}
+
+#app.show-styler aside.styler {
+  opacity: 1;
+  z-index:  102;
+  padding: 0.5em 1em;
+}
+
 #app.scheme-green,
+aside.styler ul.schemes li.green,
 #app.scheme-green .top-header {
-  background-color: #004400;
+  background-color: #003300;
 }
 
 #app.scheme-green a {
-  color: #ffff66;
+  color: #ff9999;
 }
 
 #app.scheme-green nav.main-nav {
   background-color: rgba(0,68,0,0.8);
 }
 
+aside.styler ul.schemes li.green,
 #app.scheme-green {
-  color: yellow;
+  color: #ffff33;
 }
 
 
@@ -163,18 +223,6 @@ header.top-header > .inner,
   overflow-x: hidden;
 }
 
-
-#app .top-header .bg-element {
-  position: absolute;
-  right: 0;
-  left: 0;
-  transition: background-color .5s ease-in-out;
-  pointer-events: none;
-}
-
-#app .top-header > .bg-menu {
-  transition: opacity .125s ease-in-out;
-}
 
 .plain,
 .plain > li,
@@ -239,11 +287,12 @@ nav.tags li {
   justify-content: center;
   align-content: center;
   align-items: center;
-  background-color: #005500;
+  background-color: #004400;
   opacity: 0;
   z-index: 100;
   pointer-events: none;
   transition: opacity 1.5s ease-in-out;
+  animation: loading-bg 3s 1;
 }
 
 #loading-overlay .bg {
@@ -298,6 +347,15 @@ nav.tags li {
   }
 }
 
+@keyframes loading-bg {
+  0% {
+    background-color: #333333;
+  }
+  100% {
+    background-color: #004400;
+  }
+}
+
 .show-loading #loading-overlay {
   opacity: 1;
   z-index: 100;
@@ -340,17 +398,21 @@ nav.tags li {
 .main-logo {
   position: relative;
   margin-top: -.125em;
-  background-image: url('/static/images/oi-logo.svg');
-  background-repeat: no-repeat;
-  background-size: contain;
-  background-position: center center;
   height: 2.4em;
   width: 66.667%;
-  opacity: 0.6667;
   transform: scale(1, 1);
   transition: all 0.5s ease-in-out;
   cursor: pointer;
   z-index: 100;
+}
+
+.main-logo:before {
+  position: absolute;
+  bottom:  5%;
+  left:  0;
+  right:  0;
+  text-align: center;
+  font-size: 5vw;
 }
 
 .front #loading-overlay .logo,
@@ -370,7 +432,6 @@ nav.tags li {
 .top-icon {
   position: absolute;
   top: 0.25em;
-  opacity: 0.5;
   transition: all .5s ease-in-out;
   z-index: 30;
   cursor: pointer;
@@ -406,7 +467,7 @@ nav.tags li {
 }
 
 .menu-toggle:hover {
-  opacity: 0.75;
+  transform: skew(-20deg);
 }
 
 #app nav ul.menu,
@@ -781,6 +842,10 @@ nav.main-nav {
   .main-logo {
     width:  60%;
   }
+
+  .main-logo:before {
+    font-size:  4vw;
+  }
   
   #app nav.main-nav {
     font-size: 1.333em;
@@ -871,6 +936,11 @@ nav.main-nav {
   #app .show-cart .num {
     right: 3.75em;
   }
+
+  #app .main-logo:before {
+    font-size:  4em;
+  }
+
 }
 
 @media screen and (min-width: 90em) {

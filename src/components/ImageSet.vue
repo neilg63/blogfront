@@ -113,7 +113,7 @@ export default {
               this.contClasses.push('multi-row')
               break
           }
-          this.contClasses.push(this.section.layout.replace(/_/g,'-'))
+          this.contClasses.push(this.section.layout.replace(/_/g, '-'))
           this.contClasses.push('num-images-' + this.numImages)
         }
       }
@@ -149,7 +149,7 @@ export default {
     },
     calcNext (mode) {
       let ni = this.currIndex
-      if (mode == 'prev') {
+      if (mode === 'prev') {
         ni--
       } else {
         ni++
@@ -185,14 +185,14 @@ export default {
         }
         let prevI = img.figClasses.indexOf('prev')
         let nextI = img.figClasses.indexOf('next')
-        if (index == pvI) {
+        if (index === pvI) {
           if (prevI < 0) {
             img.figClasses.push('prev')
           }
         } else if (prevI >= 0) {
           img.figClasses.splice(prevI, 1)
         }
-        if (index == nxI) {
+        if (index === nxI) {
           if (nextI < 0) {
             img.figClasses.push('next')
           }
