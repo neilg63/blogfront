@@ -3,9 +3,8 @@
     <header class="top-header">
       <div class="inner">
         <div class="menu-toggle icon-menu top-icon" v-on:click.stop="toggleMenu()"></div>
-        <div class="screen-y">{{screenY|round2}}, {{numBlogsLoaded}}</div>
-        <div id="main-logo" class="main-logo icon-oi-logo" @click="logoAction()"></div>
-        <div id="toggle-styler" @click="toggleStyler()">Styles</div>
+        <div id="main-logo" class="main-logo icon-oi-logo" @click="logoAction()"><span class="alt-text">{{title}}</span></div>
+        <div id="toggle-styler" @click="toggleStyler()" class="icon-font-window top-icon"><span class="alt-text">Styles</span><span class="bg"></span></div>
       </div>
     </header>
     <nav class="main-nav">
@@ -18,10 +17,13 @@
     <div class="main">
       <div class="home-pane">
         <slides/>
-        <article class="welcome">
+        <article class="welcome" v-if="filter == 'all'">
           <h2>{{title}}</h2>
-          <div v-html="introduction" class="body"></div>
+          <div v-html="introduction.summary" class="body"></div>
         </article>
+        <header class="filter-header" v-else>
+          <h2>{{filter}} / <span class="num-blogs">{{numFilteredBlogs}}</span></h2>
+        </header>
         <section class="listing">
           <tags-list />
           <blogs />
@@ -94,8 +96,25 @@ export default {
     numBlogsLoaded () {
       return this.$store.state.blogs.length
     },
+    numFilteredBlogs () {
+      let num = 0
+      let rgx = new RegExp(this.$store.state.filter.replace(/[^a-z0-9]+/,'.*?'),'i')
+      let tag = this.$store.state.tags.find(tg => rgx.test(tg.name))
+      if (tag) {
+        num = tag.num
+      }
+      return num
+    },
+    filter () {
+      return this.$store.state.filter.toLowerCase()
+    },
     classNames () {
       let cls = []
+      if (this.showDetail) {
+        cls.push('show-detail')
+      } else {
+        cls.push('show-home')
+      }
       if (this.showMenu) {
         cls.push('show-menu')
       }
@@ -120,22 +139,7 @@ export default {
   created () {
     this.getStyles()
     let comp = this
-    this.$bus.$on('hide-menu', () => {
-      comp.showMenu = false
-    })
-    let path = this.$route.path.replace(/^\//, '')
-    if (path.length < 2) {
-      path = 'home'
-    }
-    switch (path) {
-      case 'home':
-        this.showDetail = false
-        break
-      default:
-        this.showDetail = true
-        break
-    }
-
+    this.matchPath()
     this.$bus.$on('blogs-more-summaries', (data) => {
       if (data.items instanceof Array) {
         if (comp.numBlogsLoaded < comp.numBlogs) {
@@ -145,6 +149,12 @@ export default {
         comp.fetching = false
       }
     })
+
+    this.$bus.$on('change-path', status => {
+      comp.matchPath()
+      comp.showMenu = false
+    })
+
     window.addEventListener('keyup', (e) => {
       switch (e.keyCode) {
         case 27:
@@ -201,7 +211,7 @@ export default {
           this.title = data.home.title
         }
         if (data.home.body) {
-          this.introduction = data.home.body.full
+          this.introduction = data.home.body
         }
       }
       if (data.blogs) {
@@ -240,12 +250,6 @@ export default {
           comp.loadMoreBlogSummaries()
         }
       })
-      if (comp.updating) {
-        comp.$router.push(comp.$route.path + '#' + comp.lang)
-        comp.$root.$forceUpdate()
-
-        comp.updating = false
-      }
     },
     loadMoreBlogSummaries () {
       let comp = this
@@ -286,6 +290,26 @@ export default {
       }
       return []
     },
+    matchPath () {
+      let path = this.$route.path.replace(/^\//, '')
+      if (path.length < 2) {
+        path = 'home'
+      }
+      switch (path) {
+        case 'home':
+          this.showDetail = false
+          break
+        default:
+          let parts = path.split('/')
+          this.showDetail = parts[0] != 'filter'
+          break
+      }
+    },
+    filterByTag (tagName) {
+      this.$store.state.filter = tagName
+      this.$router.push('/filter/' + tagName.toLowerCase().replace(/[^a-z0-9]/g,'-'))
+      this.loadMoreBlogSummaries()
+    },
     updateStyles () {
       this.$ls.set('styles', JSON.stringify(this.$store.state.styles))
     },
@@ -299,7 +323,7 @@ export default {
       }
     },
     logoAction  () {
-
+      this.$router.push('/')
     },
     toggleMenu () {
       this.showMenu = !this.showMenu

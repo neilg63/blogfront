@@ -67,10 +67,7 @@ new Vue({
     
     this.loadHome()
     this.updatePath(true)
-    
-    setTimeout(() => {
-      this.updateDetail(comp.$route.path)
-    }, 1000)
+
     setTimeout(() => {
       axios.get(this.cmsApi + 'edited')
         .then(response => {
@@ -100,19 +97,10 @@ new Vue({
   watch:{
     $route (to, from){
       if (to.path) {
-        this.$bus.$emit('hide-menu', true)
-        this.updateDetail(to.path)
+        this.updatePath()
+        this.$bus.$emit('change-path', true)
       }
     },
-    homeLoaded (newVal) {
-      if (newVal) {
-        let hash = window.location.hash
-        if (/^#\/!/.test(hash)) {
-          this.$router.push('/')
-          this.$bus.$emit('back-to-home', true)
-        }
-      }
-    }
   },
   methods: {
     loadHome (fetchNew) {
@@ -189,19 +177,6 @@ new Vue({
         comp.fetching = false
       },1000)
     },
-    fetchPage (path) {
-      let pk = '/' + path, matched = false
-      if (this.pages.hasOwnProperty(pk)) {
-        if (this.pages[pk].valid) {
-          matched = true
-          this.$bus.$emit('show-detail', true)
-          this.$bus.$emit('page', this.pages[pk])
-        }
-      }
-      if (!matched) {
-        this.fetchData('page-path/' + path,'page')
-      }
-    },
     handleSiteData (data, stored) {
       let comp = this
       if (data.last_edited) {
@@ -217,24 +192,9 @@ new Vue({
         u.removeBodyClass('show-loading')
         setTimeout(() => {
           u.addBodyClass('content-loaded')
-        }, 2000);
+        }, 15000);
       }, (ts + 1000));
       comp.$bus.$emit('siteinfo', true)
-    },
-    updateDetail (path) {
-      path = path.replace(/^\//,'')
-        switch (path) {
-          case '':
-          case 'home':
-            this.$bus.$emit('show-detail', false)
-            break
-          default:
-            if (/\w+\/\w+/.test(path)) {
-              path = path.split('/').shift()
-            }
-            this.fetchPage(path)
-            break
-        }
     },
     updatePath (init) {
       let hash = window.location.hash
@@ -244,7 +204,7 @@ new Vue({
       let ts = init === true ? 1500 : 0
       let comp = this
       setTimeout(() => {
-        comp.updateDetail(comp.$route.path)
+        this.$bus.$emit('update-detail', true)
       }, ts)
     },
     detectTouch () {

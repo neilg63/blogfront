@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0" y="0" viewBox="0 0 120 120" xml:space="preserve">
+    <circle fill="rgba(0, 0, 0, 0.25)" stroke="#fff" stroke-width="3" stroke-miterlimit="6" cx="60" cy="60" r="57"></circle>
+    <line fill="none" stroke-linecap="round" stroke="#fff" stroke-width="3" stroke-miterlimit="10" x1="60" y1="60" x2="96" y2="60.5" transform="rotate(0 60 60)">
+      <animateTransform attributeName="transform" dur="15s" type="rotate" from="0 60 60" to="360 60 60" repeatCount="24"></animateTransform>
+    </line>
+    <line fill="none" stroke-linecap="round" stroke="#fff" stroke-width="4" stroke-miterlimit="6" x1="60" y1="60" x2="59.5" y2="87" transform="rotate(0 60 60)">
+      <animateTransform attributeName="transform" dur="90s" type="rotate" from="0 60 60" to="360 60 60" repeatCount="24"></animateTransform>
+    </line>
+</svg>

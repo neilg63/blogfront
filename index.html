@@ -5,7 +5,7 @@
     <meta name=viewport content="width=device-width,minimum-scale=1,shrink-to-fit=yes">
     <title><!-- #title --></title>
     <!-- #meta -->
-    <link href="https://fonts.googleapis.com/css?family=Raleway|Bubbler+One|Handlee|Open+Sans|Overpass+Mono|Swanky+and+Moo+Moo" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Raleway|Bubbler+One|Handlee|Open+Sans|Overpass+Mono|Coming+Soon" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="/static/css/base-48.css">
     <link rel="stylesheet" type="text/css" href="/static/icomoon/style.css">
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
@@ -16,23 +16,45 @@
     <meta name="msapplication-TileColor" content="#da532c">
     <meta name="theme-color" content="#ffffff">
   </head>
-  <body class="front shopfront show-loading">
+  <body class="front show-loading">
     <div id="app">
       <!-- #home_slides -->
       <!-- #content -->
       <!-- #last_updated --> 
     </div>
     <div id="loading-overlay">
-      <div class="bg bg-1"></div>
-      <div class="bg bg-2"></div>
-    <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0" y="0" viewBox="0 0 120 120" xml:space="preserve">
-    <circle fill="rgba(0, 0, 0, 0.25)" stroke="#fff" stroke-width="3" stroke-miterlimit="6" cx="60" cy="60" r="57"></circle>
-    <line fill="none" stroke-linecap="round" stroke="#fff" stroke-width="3" stroke-miterlimit="10" x1="60" y1="60" x2="96" y2="60.5" transform="rotate(0 60 60)">
-      <animateTransform attributeName="transform" dur="15s" type="rotate" from="0 60 60" to="360 60 60" repeatCount="24"></animateTransform>
-    </line>
-    <line fill="none" stroke-linecap="round" stroke="#fff" stroke-width="4" stroke-miterlimit="6" x1="60" y1="60" x2="59.5" y2="87" transform="rotate(0 60 60)">
-      <animateTransform attributeName="transform" dur="90s" type="rotate" from="0 60 60" to="360 60 60" repeatCount="24"></animateTransform>
-    </line>
+      <h1 class="title">
+       <strong class="word w-0">
+        <span class="letter l-0 char-o even">O</span>
+        <span class="letter l-1 char-u odd">u</span>
+        <span class="letter l-2 char-t even">t</span>
+        <span class="letter l-3 char-s odd">s</span>
+        <span class="letter l-4 char-i even">i</span>
+        <span class="letter l-5 char-d odd">d</span>
+        <span class="letter l-6 char-e even">e</span>
+        <span class="letter l-7 char-r odd">r</span>
+        </strong>
+        <hr class="l-1" />
+        <strong class="word w-1">
+          <span class="letter l-0 char-i even">I</span>
+          <span class="letter l-1 char-n odd">n</span>
+          <span class="letter l-2 char-s even">s</span>
+          <span class="letter l-3 char-i odd">i</span>
+          <span class="letter l-4 char-g even">g</span>
+          <span class="letter l-5 char-h odd">h</span>
+          <span class="letter l-6 char-t even">t</span>
+        </strong>
+        <hr class="l-2" />
+      </h1>
+      <blockquote>A thinker's blog about our emerging Brave New World</blockquote>
+      <h4 class="keyword k-1 from-left"><span class="term">Intellectual freedom</span></h4>
+      <h4 class="keyword k-2 from-left"><span class="term">Human nature</span></h4>
+      <h4 class="keyword k-3 from-left"><span class="term">Sustainability</span></h4>
+      <h4 class="keyword k-4 from-left"><span class="term short">Stability</span></h4>
+      <h4 class="keyword k-5 from-right"><span class="term">Social breakdown</span></h4>
+      <h4 class="keyword k-6 from-right"><span class="term short">Decadence</span></h4>
+      <h4 class="keyword k-7 from-right"><span class="term">Sense of purpose</span></h4>
+      <h4 class="keyword k-8 from-right"><span class="term short">Identity</span></h4>
     </svg>
   </div>
 	
@@ -40,6 +62,21 @@
     let path = window.location.pathname;
     if (path.length > 3) {
       document.body.classList.remove('front');
+    }
+
+    if (window.localStorage) {
+      let ts = localStorage.getItem('ts'),
+        tsi = 0,
+        dts = new Date().getTime()  / 1000;
+      if (ts) {
+        if (/\d+/.test(ts)) {
+          tsi = parseInt(ts);
+        }
+      }
+      if (tsi > 1000000 && (dts-tsi) < (5*60)) {
+         //document.body.classList.add('visited');
+      }
+      localStorage.setItem('ts', dts);
     }
   </script>
 	

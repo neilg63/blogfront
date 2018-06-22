@@ -33,10 +33,9 @@ export default {
       this.mapClassNames()
     },
     filter (tagName) {
-      this.$parent.loadMoreBlogSummaries()
-      this.filterName = tagName
-      this.$store.state.filter = tagName
+      this.$parent.filterByTag(tagName)
       this.mapClassNames()
+      this.filterName = tagName
     },
     mapClassNames () {
       let filterRgx = new RegExp('^\s*' + this.filterName.replace(/[^a-z0-9]/,'.*?') + '\s*$', 'i')

@@ -8,6 +8,11 @@ export const store = new Vuex.Store({
     home: {},
     topImages: [],
     blogs: [],
+    currNode: {
+      nid: 0,
+      title: '',
+      body: ''
+    },
     numBlogs: 0,
     tags: [],
     filter: 'all',
@@ -33,7 +38,14 @@ export const store = new Vuex.Store({
     }
   },
   mutations: {
-    
+    updateBlog(state, blog) {
+      for (let i = 0; i < state.blogs.length; i++) {
+        let b = state.blogs[i];
+        if (b.nid === blog.nid) {
+          state.blogs[i] = blog
+        }
+      }
+    }
   },
   actions: {
     

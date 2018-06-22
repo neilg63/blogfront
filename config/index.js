@@ -47,8 +47,8 @@ module.exports = {
           target: 'http://wp8.indypedia.agency',
           changeOrigin: true,
           pathRewrite: {
-          '^/jsonstyles': '/jsonstyles'
-        }
+            '^/jsonstyles': '/jsonstyles'
+          }
       },
       '/files': {
           target: 'http://wp8.indypedia.agency',

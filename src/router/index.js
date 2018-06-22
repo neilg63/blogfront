@@ -13,12 +13,22 @@ export default new Router({
       component: Detail
     },
     {
+      path: '/filter/:filter',
+      name: 'Filter',
+      component: Detail
+    },
+    {
       path: '/:name',
       name: 'Detail',
       component: Detail
     },
     {
       path: '/:name/:sub',
+      name: 'Detail',
+      component: Detail
+    },
+    {
+      path: '/:name/:sub/:sub',
       name: 'Detail',
       component: Detail
     }

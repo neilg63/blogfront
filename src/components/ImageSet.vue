@@ -1,7 +1,7 @@
  <template>
  <section class="image-set" :class="sectionClasses">
   <div :class="contClasses">
-    <figure v-for="(image,index) in images" class="image" :class="image.figClasses" v-on:click.prevent.stop="handleSelect(image,index)">
+    <figure v-for="(image, index) in images" class="image" :class="image.figClasses" v-on:click.prevent.stop="handleSelect(image, index)" :key="index">
       <vue-picture :imgset="image" :group="image.groupName" :className="image.classNames.join(' ')"></vue-picture>
       <figcaption v-if="image.hasLink">
         <template v-if="image.hasPriceInfo">
@@ -65,7 +65,7 @@ export default {
       if (this.section.images) {
         if (this.section.images instanceof Array) {
           let lastIndex = this.section.images.length - 1
-          this.images = this.section.images.map((img,index) => {
+          this.images = this.section.images.map((img, index) => {
             let oddClass = index % 2 === 0 ? 'odd' : 'even'
             img.classNames = ['num-' + index, oddClass]
             img.groupName = 'half'

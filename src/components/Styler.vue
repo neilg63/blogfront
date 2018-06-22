@@ -1,17 +1,17 @@
 <template>
   <aside class="styler">
     <ul class="plain schemes">
-      <li v-for="item in schemes" :class="item.classNames" @click="assignScheme(item)">
+      <li v-for="(item, index) in schemes" :class="item.classNames" @click="assignScheme(item)" :key="index">
         {{item.title}}
       </li>
     </ul>
     <ul class="plain text-sizes">
-      <li v-for="item in sizes" :class="item.classNames" @click="assignSize(item)">
+      <li v-for="(item, index) in sizes" :class="item.classNames" @click="assignSize(item)" :key="index">
         {{item.title}}
       </li>
     </ul>
     <ul class="plain font-families">
-      <li v-for="item in fonts" :class="item.classNames" @click="assignFont(item)">
+      <li v-for="(item, index) in fonts" :class="item.classNames" @click="assignFont(item)" :key="index">
         {{item.title}}
       </li>
     </ul>
@@ -57,12 +57,16 @@ export default {
       ],
       fonts: [
         {
+          type: 'raleway',
+          title: 'Raleway'
+        },
+        {
           type: 'open',
           title: 'Open Sans'
         },
         {
-          type: 'swanky',
-          title: 'Swanky'
+          type: 'comingsoon',
+          title: 'Coming Soon'
         },
         {
           type: 'bubbler',
@@ -82,7 +86,6 @@ export default {
   },
   methods: {
     assignClasses (mode) {
-      let def = ''
       switch (mode) {
         case 'scheme':
           this.schemes = this.mapClasses(this.schemes, this.$store.getters.scheme)
@@ -94,13 +97,11 @@ export default {
           this.fonts = this.mapClasses(this.fonts, this.$store.getters.font)
           break
       }
-      
-      
     },
     mapClasses (items, def) {
       return items.map(item => {
         item.classNames = [item.type]
-        if (item.type == def) {
+        if (item.type === def) {
           item.classNames.push('active')
         }
         return item
@@ -129,22 +130,29 @@ export default {
 
 .text-sizes {
   font-size: 1rem;
-  width: 100%;
   clear: both;
   flex: none;
 }
 
 #app .styler ul {
-  margin: 2rem 0;
+  margin: 1rem;
 }
 
 .styler ul li {
-  padding: 0.25em 1em;
+  padding: 0.5rem 1rem;
   cursor: pointer;
+  transition: all .3333s ease-in-out;
 }
 
-.styler ul.schemes li {
+#app .styler ul.schemes {
+  margin-top: 0;
+}
+
+#app .styler ul.schemes li {
   border: solid 1px black;
+  font-size: 1.5rem;
+  margin: 1.25em 0 0 0;
+  transform: scale(1, 1.25);
 }
 
 .styler ul.font-families li,
@@ -153,7 +161,7 @@ export default {
 }
 
 .styler ul li:hover {
-  transform: skew(-20deg);
+  font-style: italic;
 }
 
 .text-sizes li.small {
@@ -175,6 +183,11 @@ export default {
 .styler ul li.active {
   filter:  hue-rotate(90deg);
   text-decoration: underline;
+  font-style: italic;
+}
+
+.styler ul.font-families {
+  font-size:  1.5em;
 }
 
 </style>

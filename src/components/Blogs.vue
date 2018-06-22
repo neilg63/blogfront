@@ -1,13 +1,16 @@
 <template>
   <section class="blogs">
     <article v-for="(blog, index) in filteredBlogs" :key="index" v-if="inScope(index)" class="blog-entry" :class="blog.classNames">
-      <h3 @click="loadMore(blog)" class="title">{{blog.title}}</h3>
+      <h3 class="title"><router-link :to="blog.path">{{blog.title}}</router-link></h3>
       <time :data-date="blog.date_1">{{blog.date}}</time>
       <template v-if="blog.showFull">
         <div class="body" v-html="blog.body.full"></div>
       </template>
       <template v-else>
-        <div class="body" v-html="blog.body.summary"></div>
+        <div class="body summary">
+          <span class="summary-text"  v-html="blog.body.summary"></span>
+          <em @click="loadMore(blog)" class="load-full-body">more</em>
+        </div>
       </template>
       <ul class="plain inline tags">
         <li class="word-count">{{blog.body.wc}} words</li>
@@ -20,7 +23,6 @@
 import {mapGetters} from 'vuex'
 import axios from 'axios'
 import filters from '../mixins/filters'
-
 export default {
   name: 'Blogs',
   mixins: [
@@ -36,6 +38,7 @@ export default {
   },
   created () {
     let comp = this
+    let filter = 'all'
     if (this.$parent.$parent.homeLoaded) {
       comp.initBlogs()
     }
@@ -43,10 +46,15 @@ export default {
       comp.initBlogs()
     })
     this.$bus.$on('blogs-appended', (status) => {
-      console.log(983)
       comp.initBlogs()
     })
-    this.filterRgx = RegExp('all', 'i')
+    if (this.$route.params) {
+      if (this.$route.params.filter) {
+        filter = this.$route.params.filter.toLowerCase().replace('-', ' ')
+        this.$store.state.filter = filter
+      }
+    }
+    this.filterRgx = RegExp(filter, 'i')
   },
   computed: {
     filteredBlogs () {
@@ -57,7 +65,7 @@ export default {
       if (filter.toLowerCase() == 'all') {
         return this.blogs
       } else {
-        this.filterRgx = new RegExp('^\s*' + filter.replace(/[^a-z0-9]/i,'.*?') + '\s*$', 'i');
+        this.filterRgx = new RegExp('^\\s*' + filter.replace(/[^a-z0-9]/gi, '.*?') + '\\s*$', 'i')
         return this.blogs.filter(blog => this.filterByTag(blog))
       }
     }
@@ -69,13 +77,14 @@ export default {
         b.classNames = ['node-' + b.nid]
         return b
       })
-      this.numBlogs = this.$store.state.numBlogs 
+      this.numBlogs = this.$store.state.numBlogs
     },
-    filterByTag (blog)  {
+    filterByTag (blog) {
       if (blog.tags instanceof Array) {
-        let nt = blog.tags.length, i = 0
+        let nt = blog.tags.length
+        let i = 0
         for (; i < nt; i++) {
-          if (typeof blog.tags[i] == 'string') {
+          if (typeof blog.tags[i] === 'string') {
             if (this.filterRgx.test(blog.tags[i])) {
               return true
             }
@@ -85,42 +94,40 @@ export default {
       return false
     },
     filter (tagName) {
-      this.$store.state.filter = tagName
+      this.$parent.filterByTag(tagName)
     },
     inScope (index) {
       return index < (15 + (this.$parent.visitedEms / 15))
     },
-    loadMore(blog) {
-        if (blog.fullMode) {
-          this.blogs = this.blogs.map(b => {
-            b.showFull = b.nid === blog.nid
-            return b
+    loadMore (blog) {
+      if (blog.fullMode) {
+        this.blogs = this.blogs.map(b => {
+          b.showFull = b.nid === blog.nid
+          return b
+        })
+      } else {
+        let comp = this
+        axios.get(this.$parent.$parent.cmsApi + 'page-path/' + blog.path.replace(/^\//, '').replace(/\//g, '__'))
+          .then(response => {
+            if (response.data.nid) {
+              blog = response.data
+              blog.fullMode = true
+              comp.blogs = this.blogs.map(b => {
+                if (b.nid === blog.nid) {
+                  b = blog
+                  b.showFull = true
+                } else {
+                  b.showFull = false
+                }
+                return b
+              })
+            }
           })
-        } else {
-          let comp = this
-          axios.get(this.$parent.$parent.cmsApi + 'page-path/' + blog.path.replace(/^\//,'').replace(/\//g,'__'))
-            .then(response => {
-              if (response.data.nid) {
-                blog = response.data
-                blog.fullMode = true
-                 this.blogs = this.blogs.map(b => {
-                  if (b.nid === blog.nid) {
-                    b = blog
-                    b.showFull = true  
-                  } else {
-                    b.showFull = false
-                  }
-                  return b
-                })
-              }
-                 
-            })
-            .catch(e => {
-              console.log(e)
-            })
-        }
+          .catch(e => {
+            console.log(e)
+          })
+      }
     }
   }
 }
-
 </script>
