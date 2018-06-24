@@ -1,11 +1,10 @@
 <template>
   <article class="content-container node-page">
-    <h1 class="title">{{title}}</h1>
+    <editable-inline :text="title" type="node" :id="id" tag="h2" field="title"></editable-inline>
     <figure v-if="hasMainImage" class="subpanel" :class="mainImageClass">
       <vue-picture :imgset="image" :group="image.group" :className="image.type.replace('/','-')"></vue-picture>
     </figure>
-    <editable :text="body" type="node" :id="id" field="body"></editable>
-    
+    <editable-rich :text="body" type="node" :id="id" field="body"></editable-rich>
     <sections v-if="showSections" :sections="sections"></sections>
     <share :title="title"></share>
   </article>
@@ -16,7 +15,8 @@
 import VuePicture from './VuePicture'
 import Sections from './Sections'
 import Share from './Share'
-import Editable from './Editable'
+import EditableRich from './EditableRich'
+import EditableInline from './EditableInline'
 import filters from '../mixins/filters'
 import axios from 'axios'
 
@@ -26,7 +26,8 @@ export default {
     VuePicture,
     Sections,
     Share,
-    Editable
+    EditableRich,
+    EditableInline
   },
   mixins: [filters],
   data () {
@@ -55,7 +56,6 @@ export default {
     this.fetchNode()
     let comp = this
     this.$bus.$on('update-detail', status => {
-      console.log(status)
       comp.fetchNode()
     })
   },

@@ -1,28 +1,9 @@
-<template>
-  <div class="text-wrapper" :class="contClass">
-    <template v-if="editable">
-      <vue-editor v-model="text"></vue-editor>
-    </template>
-    <template v-else>
-      <div :id="'node-body-' + id" v-html="text"></div>
-    </template>
-    <button class="make-editable edit-control" @click="makeEditable()">Edit</button>
-    <button class="save-editable edit-control" @click="saveEditable()">Save</button>
-    <div class="message" v-if="showMessage">{{msg}}</div>
-  </div>
-</template>
 <script>
 
-import filters from '../mixins/filters'
 import axios from 'axios'
-import { VueEditor } from "vue2-editor"
 
 export default {
-  name: 'Editable',
-  components: {
-    VueEditor
-  },
-  mixins: [filters],
+  name: 'EditableBase',
   props: {
     text: {
       type: String,
@@ -39,23 +20,47 @@ export default {
     type:{
       type: String,
       required: true
+    },
+    tag: {
+      type: String,
+      default: 'div'
+    },
+    className: {
+      type: String,
+      default: 'text'
     }
   },
   data () {
     return {
+      textValue: '',
       editable: false,
-      msg: ''
+      msg: '',
+      showMessage: false
     }
   },
+  created () {
+    this.textValue = this.text
+  },
+  updated () {
+    this.textValue = this.text
+  },
   computed: {
-    contClass () {
-      return this.editable? 'editable' : 'text'
-    },
-    showMessage () {
-      return this.msg.trim().length > 1
+    wrapperClasses () {
+      let cls = [this.className]
+      if (this.editable) {
+        cls.push('editable')
+      }
+      return cls
     }
   },
   methods: {
+    toggleEditable() {
+      if (this.editable) {
+        this.saveEditable()
+      } else {
+        this.editable = true
+      }
+    },
     makeEditable() {
       this.editable = true
     },
@@ -64,9 +69,16 @@ export default {
         'et': this.type,
         'id': this.id,
         'field': this.field,
-        'value': this.text
+        'value': this.textValue
       };
-      
+      let creds = this.$store.state.credentials
+      if (creds.uname) {
+        data.uname = creds.uname
+      }
+      if (creds.psswd) {
+        data.psswd = creds.psswd
+      }
+      console.log(data)
       axios.post('/jsonstyles/save', data, {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
@@ -74,6 +86,7 @@ export default {
         }
     }).then(response => {
         this.msg = ''
+        let comp = this
         if (response.data) {
           let d = response.data
           if (d.authenticated) {
@@ -88,7 +101,11 @@ export default {
             this.msg = "Not authorised"
           }
         }
-        this.editable = false;
+        this.showMessage = true
+        this.editable = false
+        setTimeout(() => {
+          comp.showMessage = false
+        }, 5000)
       });
     }
   }

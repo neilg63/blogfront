@@ -32,7 +32,6 @@ export default {
     return {
       blogs: [],
       numBlogs: 0,
-      filterRgx: null,
       showFull: false
     }
   },
@@ -54,7 +53,6 @@ export default {
         this.$store.state.filter = filter
       }
     }
-    this.filterRgx = RegExp(filter, 'i')
   },
   computed: {
     filteredBlogs () {
@@ -64,9 +62,8 @@ export default {
       }
       if (filter.toLowerCase() == 'all') {
         return this.blogs
-      } else {
-        this.filterRgx = new RegExp('^\\s*' + filter.replace(/[^a-z0-9]/gi, '.*?') + '\\s*$', 'i')
-        return this.blogs.filter(blog => this.filterByTag(blog))
+      } else {        
+        return this.blogs.filter(blog => this.filterByTag(blog, filter))
       }
     }
   },
@@ -79,13 +76,14 @@ export default {
       })
       this.numBlogs = this.$store.state.numBlogs
     },
-    filterByTag (blog) {
+    filterByTag (blog, filter) {
+      let filterRgx = new RegExp('^\\s*' + filter.replace(/[^a-z0-9]/gi, '.*?') + '\\s*$', 'i')
       if (blog.tags instanceof Array) {
         let nt = blog.tags.length
         let i = 0
         for (; i < nt; i++) {
           if (typeof blog.tags[i] === 'string') {
-            if (this.filterRgx.test(blog.tags[i])) {
+            if (filterRgx.test(blog.tags[i])) {
               return true
             }
           }

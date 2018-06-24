@@ -12,12 +12,20 @@
     <div class="admin">
       <span class="clear icon-backward" v-on:click="clearCache()" title="Clear cache"></span>
       <a href="/user" target="_blank">Admin</a>
+      <login></login>
     </div>
 </footer>
 </template>
 <script>
+
+
+import Login from './Login'
+
 export default {
   name: 'VueFooter',
+  components: {
+    Login
+  },
   props: {
     id: {
       type: String,

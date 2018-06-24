@@ -21,6 +21,10 @@ export const store = new Vuex.Store({
       size: 'medium',
       scheme: 'light',
       font: 'default'
+    },
+    credentials: {
+      uname: '',
+      psswd: ''
     }
   },
   getters: {
